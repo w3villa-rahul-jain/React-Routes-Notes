@@ -10,6 +10,9 @@ import {
   Link,
   Outlet,
   useParams,
+  NavLink,
+  useNavigate,
+  useLocation,
 } from "react-router-dom";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -20,10 +23,11 @@ root.render(
       <Route path="/mybook" element={<Navigate replace to="/book" />} />
       <Route path="/book" element={<Book />}>
         <Route path="courses" element={<Courses />}>
-          <Route  path=":course-id"  element={<CourseId />}/>
+          <Route path=":courseid" element={<CourseId />} />
         </Route>
         <Route path="bundles" element={<Bundles />} />
       </Route>
+      <Route path="dashboard" element={<DashBoard />} />
     </Routes>
   </Router>
 );
@@ -32,6 +36,17 @@ function Home() {
   return (
     <div>
       <h1>I am Home routes</h1>
+      <Link to="/book">Book Route</Link>
+      <Link to="/new">New Route</Link>
+    </div>
+  );
+}
+
+function DashBoard() {
+  const location = useLocation();
+  return (
+    <div>
+      <h1>Course Price is {location.state}</h1>
     </div>
   );
 }
@@ -50,23 +65,48 @@ function Book() {
 }
 
 function Courses() {
+  const courseList = ["React", "Angular", "Nodejs"];
+  const randomCourseName =
+    courseList[Math.floor(Math.random() * courseList.length)];
   return (
     <div>
-      <h1>I am Course component</h1>
+      <h1>I am Course</h1>
+
+      <p>More test</p>
+      <NavLink
+        style={({ isActive }) => {
+          return {
+            backgroundColor: isActive ? "red" : "blue",
+          };
+        }}
+        to={`/book/courses/${randomCourseName}`}
+      >
+        {randomCourseName}
+      </NavLink>
+      <NavLink to={`/book/courses/test`}>test</NavLink>
+
+      <Outlet />
     </div>
   );
 }
-
 
 function CourseId() {
-
+  const navigate = useNavigate();
+  const { courseid } = useParams();
   return (
     <div>
-      <h1>I am Course component</h1>
+      <h1>I am {courseid} Course </h1>
+
+      <button
+        onClick={() => {
+          navigate("/dashboard", { state: courseid  });
+        }}
+      >
+        Price
+      </button>
     </div>
   );
 }
-
 
 function Bundles() {
   return (
